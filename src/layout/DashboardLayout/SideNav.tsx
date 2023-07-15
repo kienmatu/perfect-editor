@@ -102,7 +102,7 @@ const useStyles = createStyles<string, { collapsed?: boolean }>(
 );
 
 const ITEMS = [
-  // { href: getPath("INDEX"), label: "Trang chủ", Icon: Home },
+  { href: getPath("INDEX"), label: "Trang chủ", Icon: Home },
   { href: getPath("EDITOR"), label: "Editor", Icon: Ballpen },
   { href: getPath("SETTINGS"), label: "Cài đặt", Icon: Settings },
 ];
