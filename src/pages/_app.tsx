@@ -1,30 +1,23 @@
-import { AppProps } from "next/app";
-import Head from "next/head";
-import { MantineProvider } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
+import type { CustomAppPage } from "next/app";
+import { AppMantineProvider, GlobalStyleProvider } from "src/lib/mantine";
 
-export default function App(props: AppProps) {
-  const { Component, pageProps } = props;
+const App: CustomAppPage = ({ Component, pageProps }) => {
+  const getLayout =
+    Component.getLayout ||
+    ((page) => {
+      return page;
+    });
 
   return (
-    <>
-      <Head>
-        <title>Page title</title>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
-        />
-      </Head>
-
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{
-          /** Put your mantine theme override here */
-          colorScheme: "light",
-        }}
-      >
-        <Component {...pageProps} />
-      </MantineProvider>
-    </>
+    <GlobalStyleProvider>
+      <AppMantineProvider>
+        <NotificationsProvider>
+          {getLayout(<Component {...pageProps} />)}
+        </NotificationsProvider>
+      </AppMantineProvider>
+    </GlobalStyleProvider>
   );
-}
+};
+
+export default App;
