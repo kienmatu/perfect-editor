@@ -8,15 +8,15 @@ import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import { useEffect, useState } from 'react';
 import { analyze } from '../../utils/Analyzer';
+import { useEditorContent } from '../../utils/Storage';
 
 export interface RichEditorProps {
   clickCount: number;
 }
 
-const content = `<h2 style="text-align: center;">Welcome to Perfect editor, for the publisher - publisher</h2>
-<p>Perfect editor Support indicating the duplication words, for example, and example. </p>`;
-
 export function RichEditor(props: RichEditorProps) {
+  const [content, setContent] = useEditorContent();
+  console.log(content);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -32,6 +32,10 @@ export function RichEditor(props: RichEditorProps) {
   useEffect(() => {
     if (props.clickCount > 0) {
       analyze(editor!);
+    }
+    const json = editor?.getJSON();
+    if (json) {
+      setContent(json);
     }
   }, [props.clickCount]);
 

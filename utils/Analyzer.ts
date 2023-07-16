@@ -6,9 +6,10 @@ type WordDictionary = { [word: string]: number };
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
 export function analyze(editor: Editor) {
-  console.log(editor.state.selection);
-  return;
   console.log('doc:', editor.state.doc.toJSON());
+  editor.commands.selectAll();
+  editor.commands.unsetAllMarks();
+
   editor.state.doc.content.forEach((node, index) => {
     const duplicatedWords = findDuplicates(node!);
     console.log(`Found duplicated words at node #${index}:`, duplicatedWords);
@@ -16,6 +17,25 @@ export function analyze(editor: Editor) {
       markDuplicates(node!, editor, duplicatedWords);
     }
   });
+}
+
+function markDuplicates(node: Node, editor: Editor, duplicatedWords: string[]) {
+  if (node.text) {
+    duplicatedWords.forEach((w) => {
+      const ranges = getAllRanges(node.text!, w);
+      ranges.forEach((r) => {
+        console.log(r, node);
+        editor.commands.setTextSelection(r);
+        console.log('selection:', editor.state.selection.toJSON());
+        editor.commands.setHighlight({ color: '#ffcc00' });
+      });
+    });
+  }
+  if (node.childCount > 0) {
+    node.content.forEach((child) => {
+      markDuplicates(child, editor, duplicatedWords);
+    });
+  }
 }
 
 function findDuplicates(node: Node): string[] {
@@ -39,24 +59,6 @@ function findDuplicates(node: Node): string[] {
     return duplicatedWords;
   }
   return [];
-}
-
-function markDuplicates(node: Node, editor: Editor, duplicatedWords: string[]) {
-  if (node.text) {
-    duplicatedWords.forEach((w) => {
-      const ranges = getAllRanges(node.text!, w);
-      ranges.forEach((r) => {
-        console.log(r.from, r.to, node);
-        editor.commands.setTextSelection(r);
-        editor.commands.setHighlight({ color: '#ffcc00' });
-      });
-    });
-  }
-  if (node.childCount > 0) {
-    node.content.forEach((child) => {
-      markDuplicates(child, editor, duplicatedWords);
-    });
-  }
 }
 
 function cleanWord(input: string): string {
@@ -85,7 +87,7 @@ const getAllRanges = (fullString: string, substr: string): Range[] => {
 
     if (startIndex !== -1) {
       const endIndex = startIndex + substr.length - 1;
-      results.push({ from: startIndex, to: endIndex });
+      results.push({ from: startIndex + 1, to: endIndex + 2 });
       startIndex += 1; // Move the start index to search for the next occurrence
     }
   }
