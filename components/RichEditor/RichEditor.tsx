@@ -6,7 +6,8 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+
 import { analyze } from '../../utils/Analyzer';
 import { useEditorContent } from '../../utils/Storage';
 

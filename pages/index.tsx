@@ -18,7 +18,7 @@ export default function HomePage() {
             Perfect Editor
           </Text>
           <Text inherit variant="text" display="block" component="span">
-            Currently support only Headings and Paragraph
+            Currently support only Headings and Paragraphs
           </Text>
         </Grid.Col>
         <Grid.Col span={6} mt="xl" ml="xl">

@@ -8,7 +8,7 @@ export const StorageKeys = Object.freeze({
 type EditorState = JSONContent | string | null | undefined;
 
 const content = `<h2 style="text-align: center;">Welcome to Perfect editor, for the publisher - publisher</h2>
-<p>Perfect editor Support indicating the duplication words, for example, and example. </p>`;
+<p>Perfect editor Support indicating the duplication words, for example, and example. And words. </p>`;
 
 export function useEditorContent() {
   const stored =

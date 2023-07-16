@@ -6,7 +6,7 @@ type WordDictionary = { [word: string]: number };
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
 export function analyze(editor: Editor) {
-  console.log('doc:', editor.state.doc.toJSON());
+  console.log('selection:', editor.state.selection);
   editor.commands.selectAll();
   editor.commands.unsetAllMarks();
 
@@ -17,18 +17,24 @@ export function analyze(editor: Editor) {
       markDuplicates(node!, editor, duplicatedWords);
     }
   });
+
+  editor.commands.selectTextblockEnd();
 }
 
 function markDuplicates(node: Node, editor: Editor, duplicatedWords: string[]) {
   if (node.text) {
+    let startOffset = 0;
     duplicatedWords.forEach((w) => {
-      const ranges = getAllRanges(node.text!, w);
+      console.log('node size:', node.nodeSize);
+      const ranges = getAllRanges(node.text!, w, startOffset);
       ranges.forEach((r) => {
-        console.log(r, node);
         editor.commands.setTextSelection(r);
-        console.log('selection:', editor.state.selection.toJSON());
+        console.log('current selection:', editor.state.selection.toJSON());
         editor.commands.setHighlight({ color: '#ffcc00' });
       });
+
+      // break line == 2
+      startOffset = node.nodeSize + 2;
     });
   }
   if (node.childCount > 0) {
@@ -78,7 +84,7 @@ function cleanWord(input: string): string {
   return input.slice(startIndex, endIndex + 1);
 }
 
-const getAllRanges = (fullString: string, substr: string): Range[] => {
+const getAllRanges = (fullString: string, substr: string, startOffset: number): Range[] => {
   const results = [];
   let startIndex = 0;
 
@@ -87,8 +93,8 @@ const getAllRanges = (fullString: string, substr: string): Range[] => {
 
     if (startIndex !== -1) {
       const endIndex = startIndex + substr.length - 1;
-      results.push({ from: startIndex + 1, to: endIndex + 2 });
-      startIndex += 1; // Move the start index to search for the next occurrence
+      results.push({ from: startIndex + 1 + startOffset, to: endIndex + 2 + startOffset });
+      startIndex += 1;
     }
   }
 
