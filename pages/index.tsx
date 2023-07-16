@@ -5,10 +5,10 @@ import { RichEditor } from '../components/RichEditor';
 import { useState } from 'react';
 
 export default function HomePage() {
-  const [isButtonClicked, setIsButtonClicked] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
 
   const handleButtonClick = () => {
-    setIsButtonClicked(!isButtonClicked);
+    setClickCount((c) => c + 1);
   };
   return (
     <>
@@ -19,7 +19,7 @@ export default function HomePage() {
           </Text>
         </Grid.Col>
         <Grid.Col span={6} mt="xl" ml="xl">
-          <RichEditor isAnalyzeButtonClicked={false}></RichEditor>
+          <RichEditor clickCount={clickCount}></RichEditor>
         </Grid.Col>
         <Grid.Col span="auto">
           <ColorSchemeToggle />

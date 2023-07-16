@@ -7,15 +7,17 @@ import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import { useEffect, useState } from 'react';
+import { analyze } from '../../utils/Analyzer';
 
 export interface RichEditorProps {
-  isAnalyzeButtonClicked: boolean;
+  clickCount: number;
 }
+
 const content = `<h2 style="text-align: center;">Welcome to Perfect editor</h2>
 <p><code>Perfect editor</code> Support indicating the duplication words. </p>`;
 
 export function RichEditor(props: RichEditorProps) {
-  const initEditor = useEditor({
+  const editor = useEditor({
     extensions: [
       StarterKit,
       Underline,
@@ -27,18 +29,11 @@ export function RichEditor(props: RichEditorProps) {
     ],
     content: content,
   });
-  const [editor, setEditor] = useState(initEditor);
-
   useEffect(() => {
-    setEditor(initEditor);
-  }, []);
-
-  useEffect(() => {
-    if (props.isAnalyzeButtonClicked) {
-      const json = editor?.state.toJSON();
-      console.log(json);
+    if (props.clickCount > 0) {
+      analyze(editor!);
     }
-  }, [props.isAnalyzeButtonClicked]);
+  }, [props.clickCount]);
 
   return (
     <RichTextEditor editor={editor}>
