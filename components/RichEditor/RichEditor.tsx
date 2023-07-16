@@ -13,8 +13,8 @@ export interface RichEditorProps {
   clickCount: number;
 }
 
-const content = `<h2 style="text-align: center;">Welcome to Perfect editor</h2>
-<p><code>Perfect editor</code> Support indicating the duplication words. </p>`;
+const content = `<h2 style="text-align: center;">Welcome to Perfect editor, for the publisher - publisher</h2>
+<p>Perfect editor Support indicating the duplication words, for example, and example. </p>`;
 
 export function RichEditor(props: RichEditorProps) {
   const editor = useEditor({
