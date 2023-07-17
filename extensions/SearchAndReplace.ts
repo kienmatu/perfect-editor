@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// https://github.dev/sereneinserenade/tiptap-search-n-replace-demo/
+
 import { Extension, Range } from '@tiptap/core';
 import { Decoration, DecorationSet } from 'prosemirror-view';
 import { Plugin, PluginKey } from 'prosemirror-state';

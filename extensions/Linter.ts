@@ -1,11 +1,13 @@
 import { Extension } from '@tiptap/core';
 import { Node as ProsemirrorNode } from '@tiptap/pm/model';
-import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
+import { EditorState, Plugin, PluginKey, TextSelection, Transaction } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
+import { useState } from 'react';
 
 import LinterPlugin, { Result as Issue } from './LinterPlugin';
 import { debounce } from 'lodash';
 import { AsyncQuery } from '../lib';
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 // https://github.dev/lukesmurray/prosemirror-async-query/blob/main/src/AsyncFlowExtension.tsx
 // https://prosemirror-async-query.vercel.app/
@@ -63,9 +65,11 @@ export const Linter = Extension.create<LinterOptions>({
 
   addProseMirrorPlugins() {
     const { plugins } = this.options;
-    const debouncedApply = debounce((transaction, oldState) => {
-      return transaction.docChanged ? runAllLinterPlugins(transaction.doc, plugins) : oldState;
-    }, 3000);
+    let prevState: DecorationSet;
+
+    const debouncedApply = debounce((transaction: Transaction, decorationSet: DecorationSet) => {
+      return transaction.docChanged ? runAllLinterPlugins(transaction.doc, plugins) : decorationSet;
+    }, 2000);
 
     return [
       new Plugin({
@@ -74,11 +78,18 @@ export const Linter = Extension.create<LinterOptions>({
           init(_, { doc }) {
             return runAllLinterPlugins(doc, plugins);
           },
-          apply(transaction, oldState) {
-            // return debouncedApply(transaction, oldState);
-            return transaction.docChanged
-              ? runAllLinterPlugins(transaction.doc, plugins)
-              : oldState;
+          apply: (
+            transaction: Transaction,
+            decorationSet: DecorationSet,
+            oldState: EditorState,
+            newState: EditorState
+          ): DecorationSet => {
+            if (!transaction.docChanged) {
+              return decorationSet;
+            }
+            const debounceResult = debouncedApply(transaction, decorationSet);
+            prevState = debounceResult ? debounceResult : decorationSet;
+            return prevState;
           },
         },
         props: {
