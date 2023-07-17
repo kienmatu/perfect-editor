@@ -4,7 +4,11 @@ import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 
 import LinterPlugin, { Result as Issue } from './LinterPlugin';
+import { debounce } from 'lodash';
+import { AsyncQuery } from '../lib';
 
+// https://github.dev/lukesmurray/prosemirror-async-query/blob/main/src/AsyncFlowExtension.tsx
+// https://prosemirror-async-query.vercel.app/
 interface IconDivElement extends HTMLDivElement {
   issue?: Issue;
 }
@@ -43,6 +47,10 @@ function runAllLinterPlugins(doc: ProsemirrorNode, plugins: Array<typeof LinterP
 export interface LinterOptions {
   plugins: Array<typeof LinterPlugin>;
 }
+interface LinterPluginState {
+  query: AsyncQuery<string, string>;
+  queryResult: null | string;
+}
 
 export const Linter = Extension.create<LinterOptions>({
   name: 'linter',
@@ -55,6 +63,9 @@ export const Linter = Extension.create<LinterOptions>({
 
   addProseMirrorPlugins() {
     const { plugins } = this.options;
+    const debouncedApply = debounce((transaction, oldState) => {
+      return transaction.docChanged ? runAllLinterPlugins(transaction.doc, plugins) : oldState;
+    }, 3000);
 
     return [
       new Plugin({
@@ -64,6 +75,7 @@ export const Linter = Extension.create<LinterOptions>({
             return runAllLinterPlugins(doc, plugins);
           },
           apply(transaction, oldState) {
+            // return debouncedApply(transaction, oldState);
             return transaction.docChanged
               ? runAllLinterPlugins(transaction.doc, plugins)
               : oldState;
