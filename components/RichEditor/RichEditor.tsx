@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 
 import { analyze } from '../../utils/Analyzer';
 import { useEditorContent } from '../../utils/Storage';
+import { DuplicatedWords, Linter, Punctuation } from '../../extensions';
 
 export interface RichEditorProps {
   clickCount: number;
@@ -17,7 +18,6 @@ export interface RichEditorProps {
 
 export function RichEditor(props: RichEditorProps) {
   const [content, setContent] = useEditorContent();
-  console.log(content);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -27,12 +27,15 @@ export function RichEditor(props: RichEditorProps) {
       SubScript,
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Linter.configure({
+        plugins: [DuplicatedWords, Punctuation],
+      }),
     ],
     content: content,
   });
   useEffect(() => {
     if (props.clickCount > 0) {
-      analyze(editor!);
+      // analyze(editor!);
     }
     const json = editor?.getJSON();
     if (json) {
