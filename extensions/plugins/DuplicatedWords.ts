@@ -2,12 +2,11 @@ import LinterPlugin from '../LinterPlugin';
 import { Node } from 'prosemirror-model';
 
 type WordDictionary = { [word: string]: number };
+type RegexMatch = { index: number; word: string };
 
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
 export class DuplicatedWords extends LinterPlugin {
-  // public regex = /\b(obviously|clearly|evidently|simply)\b/gi;
-
   scan() {
     this.doc.descendants((node: Node, position: number) => {
       if (!node.isText) {
@@ -19,19 +18,30 @@ export class DuplicatedWords extends LinterPlugin {
       const duplicates = findDuplicateOccurrences(node.text);
       const regex = buildDuplicateRegex(duplicates);
 
-      const matches = regex.exec(node.text);
+      const matches = findAllMatchIndexes(regex, node.text);
 
       if (matches) {
-        this.record(
-          `This word is duplicated: '${matches[0]}'`,
-          position + matches.index,
-          position + matches.index + matches[0].length
-        );
+        matches.forEach((m) => {
+          this.record(
+            `This word is duplicated: '${m.word}'`,
+            position + m.index,
+            position + m.index + m.word.length
+          );
+        });
       }
     });
 
     return this;
   }
+}
+
+function findAllMatchIndexes(regex: RegExp, text: string): RegexMatch[] {
+  const matches: RegexMatch[] = [];
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    matches.push({ word: match[0], index: match.index });
+  }
+  return matches;
 }
 
 function buildDuplicateRegex(words: string[]): RegExp {
@@ -40,6 +50,7 @@ function buildDuplicateRegex(words: string[]): RegExp {
 
   const regexPattern = `\\b(${joinedWords})\\b`;
 
+  // g: global, i: case insensitive
   return new RegExp(regexPattern, 'ig');
 }
 

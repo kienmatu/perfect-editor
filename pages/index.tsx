@@ -27,7 +27,7 @@ export default function HomePage() {
         <Grid.Col span="auto">
           <ColorSchemeToggle />
           <Group position="center" mt="xl">
-            <Button onClick={handleButtonClick}>Analyze</Button>
+            <Button onClick={handleButtonClick}>Settings</Button>
           </Group>
         </Grid.Col>
       </Grid>
