@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 
 import { analyze } from '../../utils/Analyzer';
 import { useEditorContent } from '../../utils/Storage';
-import { DuplicatedWords, Linter, Punctuation, SearchAndReplace } from '../../extensions';
+import { DuplicatedWords, Linter, Punctuation } from '../../extensions/linter';
 
 export interface RichEditorProps {
   clickCount: number;
@@ -28,16 +28,16 @@ export function RichEditor(props: RichEditorProps) {
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       // does not support vietnamese good because of high change freq
-      // Linter.configure({
-      //   plugins: [DuplicatedWords, Punctuation],
-      // }),
+      Linter.configure({
+        plugins: [DuplicatedWords, Punctuation],
+      }),
       // SearchAndReplace.configure({ caseSensitive: false }),
     ],
     content: content,
   });
   useEffect(() => {
     if (props.clickCount > 0) {
-      analyze(editor!);
+      // analyze(editor!);
     }
     const json = editor?.getJSON();
     if (json) {

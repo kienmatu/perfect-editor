@@ -144,13 +144,15 @@ export const LinterMasterPlugin = (options: LinterMasterPluginProps) => {
   return new Plugin({
     key:
       typeof options.pluginKey === 'string' ? new PluginKey(options.pluginKey) : options.pluginKey,
-    view: (view) => new LinterView({ view, ...options }),
+    // view: (view) => new LinterView({ view, ...options }),
     state: {
       init(config, instance) {
         return runAllLinterPlugins(instance.doc, options.plugins);
       },
       apply(tr, value, oldState, newState) {
-        return value;
+        if (options.editor.view.composing) {
+          return value;
+        }
         return tr.docChanged ? runAllLinterPlugins(tr.doc, options.plugins) : value;
       },
     },

@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
-import type { Transaction } from 'prosemirror-state';
-import type { EditorView } from 'prosemirror-view';
+import type { Transaction } from '@tiptap/pm/state';
+import type { EditorView } from '@tiptap/pm/view';
 
 /**
  * The current status of the query.
