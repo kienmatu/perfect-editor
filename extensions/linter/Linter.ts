@@ -5,7 +5,6 @@ import { Decoration, DecorationSet, EditorView } from '@tiptap/pm/view';
 import { useState } from 'react';
 
 import LinterPlugin, { Result as Issue } from './LinterPlugin';
-import { debounce } from '../lib';
 
 // https://github.dev/lukesmurray/prosemirror-async-query/blob/main/src/AsyncFlowExtension.tsx
 // https://prosemirror-async-query.vercel.app/
