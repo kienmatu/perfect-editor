@@ -2,6 +2,7 @@ import { Editor, Range } from '@tiptap/core';
 import { Node } from 'prosemirror-model';
 
 type WordDictionary = { [word: string]: number };
+type RegexMatch = { index: number; word: string };
 
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
@@ -10,66 +11,65 @@ export function analyze(editor: Editor) {
   editor.commands.selectAll();
   editor.commands.unsetAllMarks();
 
-  editor.state.doc.content.forEach((node, index) => {
-    const duplicatedWords = findDuplicates(node!);
-    console.log(`Found duplicated words at node #${index}:`, duplicatedWords);
+  let buffer = 0;
+  editor.state.doc.descendants((node, index) => {
+    const text = node.text;
+
+    buffer += index;
+    if (!node.isText) {
+      return;
+    }
+    if (!node.text) {
+      return;
+    }
+    const duplicatedWords = findDuplicateOccurrences(node.text);
+    const regex = buildDuplicateRegex(duplicatedWords);
+    const matches = findAllMatchIndexes(regex, node.text);
+
     if (duplicatedWords.length > 0) {
-      markDuplicates(node!, editor, duplicatedWords);
+      markDuplicates(node!, editor, matches, buffer);
     }
   });
 
   editor.commands.selectTextblockEnd();
 }
 
-function markDuplicates(node: Node, editor: Editor, duplicatedWords: string[]) {
+function markDuplicates(node: Node, editor: Editor, matches: RegexMatch[], buffer: number) {
   if (node.text) {
-    let startOffset = 0;
-    duplicatedWords.forEach((w) => {
-      console.log('node size:', node.nodeSize);
-      const ranges = getAllRanges(node.text!, w, startOffset);
-      let buffer = 0;
-      ranges.forEach((r) => {
-        const bufferedRange = {
-          from: r.from + buffer,
-          to: r.to + buffer,
-        };
-        editor.chain().setTextSelection(r).setHighlight({ color: '#ffcc00' }).run();
-        console.log(`current selection for: ${w}`, editor.state.selection.toJSON());
-        buffer++;
-      });
-
-      // break line == 2
-      startOffset = node.nodeSize + 2;
+    matches.forEach((m) => {
+      const range = {
+        from: m.index + buffer,
+        to: m.index + m.word.length + buffer,
+      };
+      editor.chain().setTextSelection(range).setHighlight({ color: '#ffcc00' }).run();
+      console.log(`current selection for: ${m.word}`, editor.state.selection.toJSON());
     });
   }
-  if (node.childCount > 0) {
-    node.content.forEach((child) => {
-      markDuplicates(child, editor, duplicatedWords);
-    });
-  }
+  // if (node.childCount > 0) {
+  //   node.descendants((child) => {
+  //     markDuplicates(child, editor, matches);
+  //   });
+  // }
 }
 
-function findDuplicates(node: Node): string[] {
-  if (node.type.name == 'paragraph' || node.type.name == 'heading') {
-    const wordCountMap: WordDictionary = {};
-    const words = node.textContent.split(' ');
+function findDuplicateOccurrences(text: string): string[] {
+  const wordCountMap: WordDictionary = {};
+  const words = text.split(' ');
 
-    words.forEach((word) => {
-      if (ignoredCharacters.includes(word)) {
-        return;
-      }
-      const sanitizedWord = cleanWord(word);
-      if (wordCountMap[sanitizedWord]) {
-        wordCountMap[sanitizedWord]++;
-      } else {
-        wordCountMap[sanitizedWord] = 1;
-      }
-    });
+  words.forEach((word) => {
+    if (ignoredCharacters.includes(word)) {
+      return;
+    }
+    const sanitizedWord = cleanWord(word);
+    if (wordCountMap[sanitizedWord]) {
+      wordCountMap[sanitizedWord]++;
+    } else {
+      wordCountMap[sanitizedWord] = 1;
+    }
+  });
 
-    const duplicatedWords = Object.keys(wordCountMap).filter((word) => wordCountMap[word] > 1);
-    return duplicatedWords;
-  }
-  return [];
+  const duplicatedWords = Object.keys(wordCountMap).filter((word) => wordCountMap[word] > 1);
+  return duplicatedWords;
 }
 
 function cleanWord(input: string): string {
@@ -87,6 +87,25 @@ function cleanWord(input: string): string {
   }
 
   return input.slice(startIndex, endIndex + 1);
+}
+
+function findAllMatchIndexes(regex: RegExp, text: string): RegexMatch[] {
+  const matches: RegexMatch[] = [];
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    matches.push({ word: match[0], index: match.index });
+  }
+  return matches;
+}
+
+function buildDuplicateRegex(words: string[]): RegExp {
+  const escapedWords = words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const joinedWords = escapedWords.join('|');
+
+  const regexPattern = `\\b(${joinedWords})\\b`;
+
+  // g: global, i: case insensitive
+  return new RegExp(regexPattern, 'ig');
 }
 
 const getAllRanges = (fullString: string, substr: string, startOffset: number): Range[] => {
