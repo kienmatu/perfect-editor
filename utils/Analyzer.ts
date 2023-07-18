@@ -1,32 +1,107 @@
 import { Editor, Range } from '@tiptap/core';
-import { Node as ProsemirrorNode } from '@tiptap/pm/model';
-import { Decoration, DecorationSet } from '@tiptap/pm/view';
+import { Node } from 'prosemirror-model';
 
-import { DuplicatedWords, Punctuation } from '../extensions';
-import LinterPlugin, { Result as Issue } from '../extensions/LinterPlugin';
+type WordDictionary = { [word: string]: number };
+
+const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
 export function analyze(editor: Editor) {
-  // const plugins = [DuplicatedWords, Punctuation];
-  // runAllLinterPlugins(editor.state.tr.doc, plugins);
+  console.log('selection:', editor.state.selection);
+  editor.commands.selectAll();
+  editor.commands.unsetAllMarks();
+
+  editor.state.doc.content.forEach((node, index) => {
+    const duplicatedWords = findDuplicates(node!);
+    console.log(`Found duplicated words at node #${index}:`, duplicatedWords);
+    if (duplicatedWords.length > 0) {
+      markDuplicates(node!, editor, duplicatedWords);
+    }
+  });
+
+  editor.commands.selectTextblockEnd();
 }
 
-// function runAllLinterPlugins(doc: ProsemirrorNode, plugins: Array<typeof LinterPlugin>) {
-//   const decorations: [any?] = [];
+function markDuplicates(node: Node, editor: Editor, duplicatedWords: string[]) {
+  if (node.text) {
+    let startOffset = 0;
+    duplicatedWords.forEach((w) => {
+      console.log('node size:', node.nodeSize);
+      const ranges = getAllRanges(node.text!, w, startOffset);
+      let buffer = 0;
+      ranges.forEach((r) => {
+        const bufferedRange = {
+          from: r.from + buffer,
+          to: r.to + buffer,
+        };
+        editor.chain().setTextSelection(r).setHighlight({ color: '#ffcc00' }).run();
+        console.log(`current selection for: ${w}`, editor.state.selection.toJSON());
+        buffer++;
+      });
 
-//   const results = plugins
-//     .map((RegisteredLinterPlugin) => {
-//       return new RegisteredLinterPlugin(doc).scan().getResults();
-//     })
-//     .flat();
+      // break line == 2
+      startOffset = node.nodeSize + 2;
+    });
+  }
+  if (node.childCount > 0) {
+    node.content.forEach((child) => {
+      markDuplicates(child, editor, duplicatedWords);
+    });
+  }
+}
 
-//   results.forEach((issue) => {
-//     decorations.push(
-//       Decoration.inline(issue.from, issue.to, {
-//         class: 'problem',
-//       }),
-//       Decoration.widget(issue.from, renderIcon(issue))
-//     );
-//   });
+function findDuplicates(node: Node): string[] {
+  if (node.type.name == 'paragraph' || node.type.name == 'heading') {
+    const wordCountMap: WordDictionary = {};
+    const words = node.textContent.split(' ');
 
-//   DecorationSet.create(doc, decorations);
-// }
+    words.forEach((word) => {
+      if (ignoredCharacters.includes(word)) {
+        return;
+      }
+      const sanitizedWord = cleanWord(word);
+      if (wordCountMap[sanitizedWord]) {
+        wordCountMap[sanitizedWord]++;
+      } else {
+        wordCountMap[sanitizedWord] = 1;
+      }
+    });
+
+    const duplicatedWords = Object.keys(wordCountMap).filter((word) => wordCountMap[word] > 1);
+    return duplicatedWords;
+  }
+  return [];
+}
+
+function cleanWord(input: string): string {
+  let startIndex = 0;
+  let endIndex = input.length - 1;
+
+  // Remove trailing characters
+  while (startIndex <= endIndex && ignoredCharacters.includes(input[startIndex])) {
+    startIndex++;
+  }
+
+  // Remove prefixing characters
+  while (endIndex >= startIndex && ignoredCharacters.includes(input[endIndex])) {
+    endIndex--;
+  }
+
+  return input.slice(startIndex, endIndex + 1);
+}
+
+const getAllRanges = (fullString: string, substr: string, startOffset: number): Range[] => {
+  const results = [];
+  let startIndex = 0;
+
+  while (startIndex !== -1) {
+    startIndex = fullString.indexOf(substr, startIndex);
+
+    if (startIndex !== -1) {
+      const endIndex = startIndex + substr.length - 1;
+      results.push({ from: startIndex + 1 + startOffset, to: endIndex + 2 + startOffset });
+      startIndex += 1;
+    }
+  }
+
+  return results;
+};

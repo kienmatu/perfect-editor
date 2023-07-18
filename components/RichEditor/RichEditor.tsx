@@ -28,9 +28,9 @@ export function RichEditor(props: RichEditorProps) {
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       // does not support vietnamese good because of high change freq
-      Linter.configure({
-        plugins: [DuplicatedWords, Punctuation],
-      }),
+      // Linter.configure({
+      //   plugins: [DuplicatedWords, Punctuation],
+      // }),
       // SearchAndReplace.configure({ caseSensitive: false }),
     ],
     content: content,

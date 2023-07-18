@@ -150,6 +150,7 @@ export const LinterMasterPlugin = (options: LinterMasterPluginProps) => {
         return runAllLinterPlugins(instance.doc, options.plugins);
       },
       apply(tr, value, oldState, newState) {
+        return value;
         return tr.docChanged ? runAllLinterPlugins(tr.doc, options.plugins) : value;
       },
     },
