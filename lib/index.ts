@@ -5,3 +5,5 @@ export type {
   MetaKey,
   QueryStatus,
 } from './AsyncQuery';
+
+export * from './Debounce';
