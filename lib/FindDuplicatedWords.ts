@@ -22,6 +22,7 @@ function findAllMatchIndexes(regex: RegExp, text: string): RegexMatch[] {
   let loop = 0;
   while ((match = regex.exec(text)) !== null) {
     matches.push({ word: match[0], index: match.index });
+    loop++;
     if (loop > 3000) {
       console.warn('Too much match, prevent crashing..., may be an error');
       break;
@@ -34,10 +35,11 @@ function buildDuplicateRegex(words: string[]): RegExp {
   const escapedWords = words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   const joinedWords = escapedWords.join('|');
 
-  const regexPattern = `\\b(${joinedWords})\\b`;
+  // const regexPattern = `\\b(${joinedWords})\\b`;
+  const regexPattern = `(?<![\\p{L}\\p{N}_])(${joinedWords})(?![\\p{L}\\p{N}_])`;
 
-  // g: global, i: case insensitive
-  return new RegExp(regexPattern, 'ig');
+  // g: global, i: case insensitive, u: full unicode
+  return new RegExp(regexPattern, 'igu');
 }
 
 function findDuplicateOccurrences(text: string): string[] {
@@ -58,7 +60,6 @@ function findDuplicateOccurrences(text: string): string[] {
 
   const duplicatedWords = Object.keys(wordCountMap).filter((word) => wordCountMap[word] > 1);
   return duplicatedWords;
-  return [];
 }
 
 function cleanWord(input: string): string {
