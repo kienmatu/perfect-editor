@@ -32,7 +32,7 @@ export function RichEditor(props: RichEditorProps) {
       Linter.configure({
         plugins: [DuplicatedWords, Punctuation],
       }),
-      searchExtension,
+      // searchExtension,
     ],
     content: content,
   });
