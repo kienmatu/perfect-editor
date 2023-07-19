@@ -4,7 +4,7 @@ import { RegexMatch, WordDictionary } from './Model';
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
 export const findDuplicatedMatches = (node: Node): RegexMatch[] => {
-  if (node.type.name !== 'paragraph') {
+  if (node.type.name !== 'paragraph' && node.type.name !== 'heading') {
     return [];
   }
   const duplicates = findDuplicateOccurrences(node.textContent);
