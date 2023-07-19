@@ -1,8 +1,6 @@
 import { Editor, Range } from '@tiptap/core';
 import { Node } from 'prosemirror-model';
-
-type WordDictionary = { [word: string]: number };
-type RegexMatch = { index: number; word: string };
+import { RegexMatch, WordDictionary } from '../lib';
 
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 

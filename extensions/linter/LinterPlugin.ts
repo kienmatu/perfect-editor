@@ -1,11 +1,5 @@
 import { Node as ProsemirrorNode } from '@tiptap/pm/model';
-
-export interface Result {
-  message: string;
-  from: number;
-  to: number;
-  fix?: Function;
-}
+import { Result } from '../../lib';
 
 export default class LinterPlugin {
   protected doc;

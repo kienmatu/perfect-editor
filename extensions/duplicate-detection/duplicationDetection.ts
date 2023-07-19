@@ -1,8 +1,10 @@
 import { Editor, Range } from '@tiptap/core';
 import { EditorState, Plugin, PluginKey } from '@tiptap/pm/state';
+import { Node } from '@tiptap/pm/model';
 import { Decoration, DecorationSet, EditorView } from '@tiptap/pm/view';
 
-import { findSuggestionMatch } from './findSuggestionMatch.js';
+import { findDuplicatedMatches } from '../../lib/FindDuplicatedWords.js';
+import { RegexMatch, Result } from '../../lib/Model.js';
 
 export interface DuplicationDetectionOptions<I = any> {
   pluginKey?: PluginKey;
@@ -142,16 +144,12 @@ export function DuplicationDetection<I = any>({
       init() {
         const state: {
           active: boolean;
-          decorationSet?: DecorationSet;
-          query: null | string;
-          text: null | string;
+          results: Result[];
           composing: boolean;
           decorationId?: string | null;
         } = {
           active: false,
-          decorationSet: undefined,
-          query: null,
-          text: null,
+          results: [],
           composing: false,
         };
 
@@ -162,38 +160,29 @@ export function DuplicationDetection<I = any>({
       apply(transaction, prev, oldState, state) {
         const { isEditable } = editor;
         const { composing } = editor.view;
-        const { selection } = transaction;
-        const { empty, from } = selection;
         const next = { ...prev };
 
         next.composing = composing;
 
-        // We can only be suggesting if the view is editable, and:
-        //   * there is no selection, or
-        //   * a composition is active (see: https://github.com/ueberdosis/tiptap/issues/1449)
-        if (isEditable && (empty || editor.view.composing)) {
-          // Reset active state if we just left the previous suggestion range
-          if ((from < prev.range.from || from > prev.range.to) && !composing && !prev.composing) {
-            next.active = false;
-          }
-
+        if (isEditable && !editor.view.composing) {
           // Try to match against where our cursor currently is
-          const match = findSuggestionMatch({
-            char,
-            allowSpaces,
-            allowedPrefixes,
-            startOfLine,
-            $position: selection.$from,
+          const results: Result[] = [];
+          transaction.doc.descendants((node: Node, position: number) => {
+            findDuplicatedMatches(node).forEach((m) => {
+              results.push({
+                message: `This word is duplicated: '${m.word}'`,
+                from: position + m.index,
+                to: position + m.index + m.word.length,
+              });
+            });
           });
           const decorationId = `id_${Math.floor(Math.random() * 0xffffffff)}`;
 
           // If we found a match, update the current state to show it
-          if (match && allow({ editor, state, range: match.range })) {
+          if (results) {
             next.active = true;
             next.decorationId = prev.decorationId ? prev.decorationId : decorationId;
-            next.range = match.range;
-            next.query = match.query;
-            next.text = match.text;
+            next.results = results;
           } else {
             next.active = false;
           }
@@ -204,9 +193,7 @@ export function DuplicationDetection<I = any>({
         // Make sure to empty the range if suggestion is inactive
         if (!next.active) {
           next.decorationId = null;
-          next.decorationSet = prev.decorationSet;
-          next.query = null;
-          next.text = null;
+          next.results = prev.results;
         }
 
         return next;
@@ -227,19 +214,21 @@ export function DuplicationDetection<I = any>({
 
       // Setup decorator on the currently active suggestion.
       decorations(state: EditorState) {
-        const { active, range, decorationId } = plugin.getState(state);
+        const { active, results, decorationId } = plugin.getState(state);
 
         if (!active) {
           return null;
         }
-
-        return DecorationSet.create(state.doc, [
-          Decoration.inline(range.from, range.to, {
-            nodeName: decorationTag,
-            class: decorationClass,
-            'data-decoration-id': decorationId,
-          }),
-        ]);
+        const decorations: Decoration[] = [];
+        results.forEach((r: Result) => {
+          decorations.push(
+            Decoration.inline(r.from, r.to, {
+              class: 'problem',
+            })
+            // Decoration.widget(m.from, renderIcon(issue))
+          );
+        });
+        return DecorationSet.create(state.doc, decorations);
       },
     },
   });
