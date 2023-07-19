@@ -20,7 +20,7 @@ export interface RichEditorProps {
 export function RichEditor(props: RichEditorProps) {
   const [content, setContent] = useEditorContent();
   const searchExtension = SearchAndReplace.configure({ caseSensitive: false });
-  searchExtension.storage.searchTerm = 'tìm kiếm';
+  searchExtension.storage.searchTerm = props.keywords;
   const editor = useEditor({
     extensions: [
       StarterKit,

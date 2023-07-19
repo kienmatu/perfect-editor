@@ -288,8 +288,9 @@ export const SearchAndReplace = Extension.create<SearchAndReplaceOptions, Search
           },
           apply({ doc, docChanged }, oldState) {
             const { searchTerm, lastSearchTerm } = editor.storage.searchAndReplace;
-
-            if (!docChanged && lastSearchTerm === searchTerm) {
+            if (!docChanged && firstLoad) {
+              firstLoad = true;
+            } else if (!docChanged && lastSearchTerm === searchTerm) {
               return oldState;
             }
 
