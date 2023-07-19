@@ -14,7 +14,7 @@ export default function HomePage() {
     setBtnSaveClickCount((c) => c + 1);
     showSuccessNotification('Đã lưu', 'Đã lưu lại nội dung vào bộ nhớ.');
   };
-
+  // @ts-ignore: Unreachable code error
   const handleKeywordsChange = ({ target }) => {
     const text = target?.value;
     if (text !== undefined && text !== null) {
