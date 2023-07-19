@@ -1,7 +1,7 @@
-import { Extension, Editor } from '@tiptap/core';
+import { Extension } from '@tiptap/core';
 import { Node as ProsemirrorNode } from '@tiptap/pm/model';
-import { EditorState, Plugin, PluginKey, TextSelection, Transaction } from '@tiptap/pm/state';
-import { Decoration, DecorationSet, EditorView } from '@tiptap/pm/view';
+import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
+import { Decoration, DecorationSet } from '@tiptap/pm/view';
 
 import { Result as Issue } from '../../lib';
 import LinterPlugin from './LinterPlugin';
@@ -61,7 +61,6 @@ export const Linter = Extension.create<LinterOptions>({
   addProseMirrorPlugins() {
     const { plugins } = this.options;
     const editor = this.editor;
-    let decorCount = 0;
     return [
       new Plugin({
         key: new PluginKey('linter'),
@@ -79,6 +78,7 @@ export const Linter = Extension.create<LinterOptions>({
               return oldState;
             }
             const newDecorations = runAllLinterPlugins(tr.doc, plugins);
+            // might be redundant
             const stopped = !editor.view.composing;
             return {
               oldDecorations: oldState.decorations,
@@ -89,7 +89,6 @@ export const Linter = Extension.create<LinterOptions>({
         },
         props: {
           decorations(state) {
-            console.log('Decor count:', decorCount++);
             const props = this.getState(state);
             if (props?.stopped) {
               return props.decorations;

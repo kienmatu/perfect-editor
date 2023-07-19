@@ -8,7 +8,7 @@ export const StorageKeys = Object.freeze({
 type EditorState = JSONContent | string | null | undefined;
 
 const content = `<h2 style="text-align: center;">Welcome to Perfect editor, for the publisher - publisher</h2>
-<p>Perfect editor Support indicating the duplication words, for example, and example. And words. </p>`;
+<p>Hỗ trợ tìm kiếm các từ bị lặp trong 1 đoạn văn, ví dụ đoạn văn này.</p>`;
 
 export function useEditorContent() {
   const stored =
@@ -17,12 +17,20 @@ export function useEditorContent() {
   return useLocalStorage<EditorState>(StorageKeys.EDITOR_CONTENT, initialContent);
 }
 
+export function useKeywords() {
+  const stored =
+    typeof window !== 'undefined' ? localStorage.getItem(StorageKeys.KEYWORD_LIST) : null;
+  const initialContent = stored ? JSON.parse(stored) : 'tìm kiếm';
+  return useLocalStorage<string>(StorageKeys.KEYWORD_LIST, initialContent);
+}
+
 export function useLocalStorage<T>(key: string, fallbackValue: T) {
   const [value, setValue] = useState(fallbackValue);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(key, JSON.stringify(value));
+      const savingValue = value !== undefined && value !== null ? value : '';
+      localStorage.setItem(key, JSON.stringify(savingValue));
     }
   }, [key, value]);
 

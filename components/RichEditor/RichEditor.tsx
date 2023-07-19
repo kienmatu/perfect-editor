@@ -8,16 +8,20 @@ import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import { useEffect } from 'react';
 
-import { analyze } from '../../utils/Analyzer';
 import { useEditorContent } from '../../utils/Storage';
-import { DuplicatedWords, Linter, Punctuation } from '../../extensions/linter';
+import { DuplicatedWords, Linter, Punctuation, SearchAndReplace } from '../../extensions/linter';
 
 export interface RichEditorProps {
-  clickCount: number;
+  btnSaveClickCount: number;
+  btnSearchClickCount: number;
+  btnResetClickCount: number;
+  keywords: string;
 }
 
 export function RichEditor(props: RichEditorProps) {
   const [content, setContent] = useEditorContent();
+  const searchExtension = SearchAndReplace.configure({ caseSensitive: false });
+  searchExtension.storage.searchTerm = 'tìm kiếm';
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -27,26 +31,31 @@ export function RichEditor(props: RichEditorProps) {
       SubScript,
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      // does not support vietnamese good because of high change freq
       Linter.configure({
         plugins: [DuplicatedWords, Punctuation],
       }),
-      // SearchAndReplace.configure({ caseSensitive: false }),
+      searchExtension,
     ],
     content: content,
   });
+
   useEffect(() => {
-    if (props.clickCount > 0) {
-      // analyze(editor!);
+    if (props.btnSaveClickCount > 0) {
+      const json = editor?.getJSON();
+      if (json) {
+        setContent(json);
+      }
     }
-    const json = editor?.getJSON();
-    if (json) {
-      setContent(json);
+  }, [props.btnSaveClickCount]);
+
+  useEffect(() => {
+    if (props.keywords !== undefined && props.keywords !== null) {
+      editor?.commands.setSearchTerm(props.keywords);
     }
-  }, [props.clickCount]);
+  }, [props.keywords]);
 
   return (
-    <RichTextEditor editor={editor} style={{ minHeight: '300px' }}>
+    <RichTextEditor editor={editor} style={{ minHeight: '400px' }}>
       <RichTextEditor.Toolbar stickyOffset={60}>
         <RichTextEditor.ControlsGroup>
           <RichTextEditor.Bold />
