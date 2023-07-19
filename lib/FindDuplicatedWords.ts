@@ -7,12 +7,12 @@ export const findDuplicatedMatches = (node: Node): RegexMatch[] => {
   if (node.type.name !== 'paragraph' && node.type.name !== 'heading') {
     return [];
   }
-  const duplicates = findDuplicateOccurrences(node.textContent);
+  const duplicates = findDuplicateOccurrences(node.textContent?.toLowerCase());
   if (duplicates.length < 1) {
     return [];
   }
   const regex = buildDuplicateRegex(duplicates);
-  const matches = findAllMatchIndexes(regex, node.textContent);
+  const matches = findAllMatchIndexes(regex, node.textContent?.toLowerCase());
   return matches;
 };
 
