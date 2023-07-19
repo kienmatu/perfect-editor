@@ -46,7 +46,7 @@ export function RichEditor(props: RichEditorProps) {
   }, [props.clickCount]);
 
   return (
-    <RichTextEditor editor={editor}>
+    <RichTextEditor editor={editor} style={{ minHeight: '300px' }}>
       <RichTextEditor.Toolbar stickyOffset={60}>
         <RichTextEditor.ControlsGroup>
           <RichTextEditor.Bold />

@@ -18,7 +18,6 @@ export default function HomePage() {
             Perfect Editor
           </Text>
           <Text inherit variant="text" display="block" component="span">
-            Currently supports only Headings and Paragraphs. <br />
             Kiểm tra trong 1 đoạn văn có chứa từ trùng lặp hay không.
           </Text>
         </Grid.Col>
