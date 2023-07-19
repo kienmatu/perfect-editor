@@ -1,2 +1,2 @@
-export * from './Debounce';
 export * from './Model';
+export * from './FindDuplicatedWords';

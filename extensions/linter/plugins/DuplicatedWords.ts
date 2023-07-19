@@ -1,7 +1,7 @@
 import { Node } from '@tiptap/pm/model';
 
 import LinterPlugin from '../LinterPlugin';
-import { findDuplicatedMatches } from '../../../lib/FindDuplicatedWords';
+import { findDuplicatedMatches } from '../../../lib';
 
 export class DuplicatedWords extends LinterPlugin {
   scan() {
