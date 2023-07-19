@@ -6,13 +6,14 @@ import { findDuplicatedMatches } from '../../../lib';
 export class DuplicatedWords extends LinterPlugin {
   scan() {
     this.doc.descendants((node: Node, position: number) => {
+      console.log('current node:', node);
       const matches = findDuplicatedMatches(node);
       if (matches) {
         matches.forEach((m) => {
           this.record(
             `This word is duplicated: '${m.word}'`,
-            position + m.index,
-            position + m.index + m.word.length
+            position + m.index + 1,
+            position + m.index + m.word.length + 1
           );
         });
       }

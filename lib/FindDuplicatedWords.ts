@@ -4,15 +4,15 @@ import { RegexMatch, WordDictionary } from './Model';
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
 export const findDuplicatedMatches = (node: Node): RegexMatch[] => {
-  if (!node.isText || !node.text) {
+  if (node.type.name !== 'paragraph') {
     return [];
   }
-  const duplicates = findDuplicateOccurrences(node.text);
+  const duplicates = findDuplicateOccurrences(node.textContent);
   if (duplicates.length < 1) {
     return [];
   }
   const regex = buildDuplicateRegex(duplicates);
-  const matches = findAllMatchIndexes(regex, node.text);
+  const matches = findAllMatchIndexes(regex, node.textContent);
   return matches;
 };
 
