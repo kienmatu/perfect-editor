@@ -1,5 +1,4 @@
 export * from '.';
-export * from '../SearchAndReplace';
 export { Linter } from './Linter';
 
 export { DuplicatedWords } from './plugins/DuplicatedWords';

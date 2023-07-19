@@ -9,7 +9,8 @@ import SubScript from '@tiptap/extension-subscript';
 import { useEffect } from 'react';
 
 import { useEditorContent } from '../../utils/Storage';
-import { DuplicatedWords, Linter, Punctuation, SearchAndReplace } from '../../extensions/linter';
+import { DuplicatedWords, Linter, Punctuation } from '../../extensions/linter';
+import { SearchAndReplace } from '../../extensions/searchAndReplace';
 
 export interface RichEditorProps {
   btnSaveClickCount: number;
