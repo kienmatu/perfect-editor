@@ -9,16 +9,19 @@ import SubScript from '@tiptap/extension-subscript';
 import { useEffect } from 'react';
 
 import { useEditorContent } from '../../utils/Storage';
-import { DuplicatedWords, Linter, Punctuation } from '../../extensions/linter';
+import { DuplicatedWords, Linter, Punctuation, SearchAndReplace } from '../../extensions/linter';
 
 export interface RichEditorProps {
   btnSaveClickCount: number;
   btnSearchClickCount: number;
   btnResetClickCount: number;
+  keywords: string;
 }
 
 export function RichEditor(props: RichEditorProps) {
   const [content, setContent] = useEditorContent();
+  const searchExtension = SearchAndReplace.configure({ caseSensitive: false });
+  searchExtension.storage.searchTerm = 'tìm kiếm';
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -31,10 +34,11 @@ export function RichEditor(props: RichEditorProps) {
       Linter.configure({
         plugins: [DuplicatedWords, Punctuation],
       }),
-      // SearchAndReplace.configure({ caseSensitive: false }),
+      searchExtension,
     ],
     content: content,
   });
+
   useEffect(() => {
     if (props.btnSaveClickCount > 0) {
       const json = editor?.getJSON();
@@ -44,8 +48,14 @@ export function RichEditor(props: RichEditorProps) {
     }
   }, [props.btnSaveClickCount]);
 
+  useEffect(() => {
+    if (props.keywords !== undefined && props.keywords !== null) {
+      editor?.commands.setSearchTerm(props.keywords);
+    }
+  }, [props.keywords]);
+
   return (
-    <RichTextEditor editor={editor} style={{ minHeight: '300px' }}>
+    <RichTextEditor editor={editor} style={{ minHeight: '400px' }}>
       <RichTextEditor.Toolbar stickyOffset={60}>
         <RichTextEditor.ControlsGroup>
           <RichTextEditor.Bold />

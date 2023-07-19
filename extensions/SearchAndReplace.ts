@@ -62,6 +62,19 @@ const getRegex = (s: string, disableRegex: boolean, caseSensitive: boolean): Reg
   );
 };
 
+const getMultipleLinesRegex = (
+  s: string[],
+  disableRegex: boolean,
+  caseSensitive: boolean
+): RegExp => {
+  const joinedString = s.join('|'); // Join the array elements with '|' to create an "OR" pattern
+
+  return RegExp(
+    disableRegex ? joinedString.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') : joinedString,
+    caseSensitive ? 'gu' : 'gui'
+  );
+};
+
 interface ProcessedSearches {
   decorationsToReturn: DecorationSet;
   results: Range[];
@@ -261,6 +274,7 @@ export const SearchAndReplace = Extension.create<SearchAndReplaceOptions, Search
 
   addProseMirrorPlugins() {
     const editor = this.editor;
+    let firstLoad = false;
     const { searchResultClass, disableRegex, caseSensitive } = this.options;
 
     const setLastSearchTerm = (t: string) => (editor.storage.searchAndReplace.lastSearchTerm = t);
@@ -269,19 +283,25 @@ export const SearchAndReplace = Extension.create<SearchAndReplaceOptions, Search
       new Plugin({
         key: searchAndReplacePluginKey,
         state: {
-          init: () => DecorationSet.empty,
+          init: (_, { doc }) => {
+            return DecorationSet.empty;
+          },
           apply({ doc, docChanged }, oldState) {
             const { searchTerm, lastSearchTerm } = editor.storage.searchAndReplace;
 
-            if (!docChanged && lastSearchTerm === searchTerm) return oldState;
+            if (!docChanged && lastSearchTerm === searchTerm) {
+              return oldState;
+            }
 
             setLastSearchTerm(searchTerm);
 
             if (!searchTerm) return DecorationSet.empty;
 
+            const stringArr = searchTerm.split('\n');
+
             const { decorationsToReturn, results } = processSearches(
               doc,
-              getRegex(searchTerm, disableRegex, caseSensitive),
+              getMultipleLinesRegex(stringArr, disableRegex, caseSensitive),
               searchResultClass
             );
 
