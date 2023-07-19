@@ -1,45 +1,32 @@
-import LinterPlugin from '../LinterPlugin';
-import { Node } from 'prosemirror-model';
-
-type WordDictionary = { [word: string]: number };
-type RegexMatch = { index: number; word: string };
+import { Node } from '@tiptap/pm/model';
+import { RegexMatch, WordDictionary } from './Model';
 
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
-export class DuplicatedWords extends LinterPlugin {
-  scan() {
-    this.doc.descendants((node: Node, position: number) => {
-      if (!node.isText) {
-        return;
-      }
-      if (!node.text) {
-        return;
-      }
-      const duplicates = findDuplicateOccurrences(node.text);
-      const regex = buildDuplicateRegex(duplicates);
-
-      const matches = findAllMatchIndexes(regex, node.text);
-
-      if (matches) {
-        matches.forEach((m) => {
-          this.record(
-            `This word is duplicated: '${m.word}'`,
-            position + m.index,
-            position + m.index + m.word.length
-          );
-        });
-      }
-    });
-
-    return this;
+export const findDuplicatedMatches = (node: Node): RegexMatch[] => {
+  if (!node.isText || !node.text) {
+    return [];
   }
-}
+  const duplicates = findDuplicateOccurrences(node.text);
+  if (duplicates.length < 1) {
+    return [];
+  }
+  const regex = buildDuplicateRegex(duplicates);
+  const matches = findAllMatchIndexes(regex, node.text);
+  return matches;
+};
 
 function findAllMatchIndexes(regex: RegExp, text: string): RegexMatch[] {
   const matches: RegexMatch[] = [];
   let match;
+  let loop = 0;
   while ((match = regex.exec(text)) !== null) {
     matches.push({ word: match[0], index: match.index });
+    loop++;
+    if (loop > 3000) {
+      console.warn('Too much match, prevent crashing..., may be an error');
+      break;
+    }
   }
   return matches;
 }
@@ -48,10 +35,11 @@ function buildDuplicateRegex(words: string[]): RegExp {
   const escapedWords = words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   const joinedWords = escapedWords.join('|');
 
-  const regexPattern = `\\b(${joinedWords})\\b`;
+  // const regexPattern = `\\b(${joinedWords})\\b`;
+  const regexPattern = `(?<![\\p{L}\\p{N}_])(${joinedWords})(?![\\p{L}\\p{N}_])`;
 
-  // g: global, i: case insensitive
-  return new RegExp(regexPattern, 'ig');
+  // g: global, i: case insensitive, u: full unicode
+  return new RegExp(regexPattern, 'igu');
 }
 
 function findDuplicateOccurrences(text: string): string[] {
@@ -72,7 +60,6 @@ function findDuplicateOccurrences(text: string): string[] {
 
   const duplicatedWords = Object.keys(wordCountMap).filter((word) => wordCountMap[word] > 1);
   return duplicatedWords;
-  return [];
 }
 
 function cleanWord(input: string): string {

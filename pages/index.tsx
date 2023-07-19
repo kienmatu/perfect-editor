@@ -18,7 +18,7 @@ export default function HomePage() {
             Perfect Editor
           </Text>
           <Text inherit variant="text" display="block" component="span">
-            Currently support only Headings and Paragraphs
+            Kiểm tra trong 1 đoạn văn có chứa từ trùng lặp hay không.
           </Text>
         </Grid.Col>
         <Grid.Col span={6} mt="xl" ml="xl">
@@ -27,7 +27,7 @@ export default function HomePage() {
         <Grid.Col span="auto">
           <ColorSchemeToggle />
           <Group position="center" mt="xl">
-            <Button onClick={handleButtonClick}>Analyze</Button>
+            <Button onClick={handleButtonClick}>Lưu nháp</Button>
           </Group>
         </Grid.Col>
       </Grid>

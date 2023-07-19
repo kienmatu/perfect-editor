@@ -1,8 +1,6 @@
 import { Editor, Range } from '@tiptap/core';
 import { Node } from 'prosemirror-model';
-
-type WordDictionary = { [word: string]: number };
-type RegexMatch = { index: number; word: string };
+import { RegexMatch, WordDictionary } from '../lib';
 
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
@@ -14,8 +12,10 @@ export function analyze(editor: Editor) {
   let buffer = 0;
   editor.state.doc.descendants((node, index) => {
     const text = node.text;
-
-    buffer += index;
+    console.log('Current node: ', node);
+    if (!node.isBlock) {
+      buffer += index;
+    }
     if (!node.isText) {
       return;
     }
@@ -42,7 +42,7 @@ function markDuplicates(node: Node, editor: Editor, matches: RegexMatch[], buffe
         to: m.index + m.word.length + buffer,
       };
       editor.chain().setTextSelection(range).setHighlight({ color: '#ffcc00' }).run();
-      console.log(`current selection for: ${m.word}`, editor.state.selection.toJSON());
+      // console.log(`current selection for: ${m.word}`, editor.state.selection.toJSON());
     });
   }
   // if (node.childCount > 0) {

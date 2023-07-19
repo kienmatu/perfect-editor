@@ -1,8 +1,6 @@
-import { Linter } from './Linter';
-
-export * from './Linter';
-export * from './SearchAndReplace';
-export default Linter;
+export * from '.';
+export * from '../SearchAndReplace';
+export { Linter } from './Linter';
 
 export { DuplicatedWords } from './plugins/DuplicatedWords';
 export { HeadingLevel } from './plugins/HeadingLevel';
