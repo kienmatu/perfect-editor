@@ -44,10 +44,14 @@ function runAllLinterPlugins(doc: ProsemirrorNode, plugins: Array<typeof LinterP
 export interface LinterOptions {
   plugins: Array<typeof LinterPlugin>;
 }
+interface LinterProps {
+  oldDecorations: DecorationSet;
+  decorations: DecorationSet;
+  stopped: boolean;
+}
 
 export const Linter = Extension.create<LinterOptions>({
   name: 'linter',
-
   addOptions() {
     return {
       plugins: [],
@@ -56,21 +60,41 @@ export const Linter = Extension.create<LinterOptions>({
 
   addProseMirrorPlugins() {
     const { plugins } = this.options;
-
+    const editor = this.editor;
+    let decorCount = 0;
     return [
       new Plugin({
         key: new PluginKey('linter'),
         state: {
-          init(_, { doc }) {
-            return runAllLinterPlugins(doc, plugins);
+          init(_, { doc }): LinterProps {
+            const initDecor = runAllLinterPlugins(doc, plugins);
+            return {
+              oldDecorations: initDecor,
+              decorations: initDecor,
+              stopped: true,
+            };
           },
-          apply(tr, oldState) {
-            return tr.docChanged ? runAllLinterPlugins(tr.doc, plugins) : oldState;
+          apply(tr, oldState): LinterProps {
+            if (!tr.docChanged) {
+              return oldState;
+            }
+            const newDecorations = runAllLinterPlugins(tr.doc, plugins);
+            const stopped = !editor.view.composing;
+            return {
+              oldDecorations: oldState.decorations,
+              decorations: newDecorations,
+              stopped: stopped,
+            };
           },
         },
         props: {
           decorations(state) {
-            return this.getState(state);
+            console.log('Decor count:', decorCount++);
+            const props = this.getState(state);
+            if (props?.stopped) {
+              return props.decorations;
+            }
+            return props?.oldDecorations;
           },
           handleClick(view, _, event) {
             const target = event.target as IconDivElement;

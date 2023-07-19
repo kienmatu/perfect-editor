@@ -8,17 +8,24 @@ export const findDuplicatedMatches = (node: Node): RegexMatch[] => {
     return [];
   }
   const duplicates = findDuplicateOccurrences(node.text);
+  if (duplicates.length < 1) {
+    return [];
+  }
   const regex = buildDuplicateRegex(duplicates);
   const matches = findAllMatchIndexes(regex, node.text);
-
   return matches;
 };
 
 function findAllMatchIndexes(regex: RegExp, text: string): RegexMatch[] {
   const matches: RegexMatch[] = [];
   let match;
+  let loop = 0;
   while ((match = regex.exec(text)) !== null) {
     matches.push({ word: match[0], index: match.index });
+    if (loop > 3000) {
+      console.warn('Too much match, prevent crashing..., may be an error');
+      break;
+    }
   }
   return matches;
 }
