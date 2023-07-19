@@ -8,12 +8,13 @@ import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import { useEffect } from 'react';
 
-import { analyze } from '../../utils/Analyzer';
 import { useEditorContent } from '../../utils/Storage';
 import { DuplicatedWords, Linter, Punctuation } from '../../extensions/linter';
 
 export interface RichEditorProps {
-  clickCount: number;
+  btnSaveClickCount: number;
+  btnSearchClickCount: number;
+  btnResetClickCount: number;
 }
 
 export function RichEditor(props: RichEditorProps) {
@@ -27,7 +28,6 @@ export function RichEditor(props: RichEditorProps) {
       SubScript,
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      // does not support vietnamese good because of high change freq
       Linter.configure({
         plugins: [DuplicatedWords, Punctuation],
       }),
@@ -36,14 +36,13 @@ export function RichEditor(props: RichEditorProps) {
     content: content,
   });
   useEffect(() => {
-    if (props.clickCount > 0) {
-      // analyze(editor!);
+    if (props.btnSaveClickCount > 0) {
+      const json = editor?.getJSON();
+      if (json) {
+        setContent(json);
+      }
     }
-    const json = editor?.getJSON();
-    if (json) {
-      setContent(json);
-    }
-  }, [props.clickCount]);
+  }, [props.btnSaveClickCount]);
 
   return (
     <RichTextEditor editor={editor} style={{ minHeight: '300px' }}>
