@@ -13,8 +13,6 @@ import { DuplicatedWords, Linter, Punctuation, SearchAndReplace } from '../../ex
 
 export interface RichEditorProps {
   btnSaveClickCount: number;
-  btnSearchClickCount: number;
-  btnResetClickCount: number;
   keywords: string;
 }
 

@@ -1,32 +1,18 @@
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
-import { Text, Button, Group, Collapse, Box, Textarea } from '@mantine/core';
+import { Text, Button, Group, Box, Textarea } from '@mantine/core';
 import { Grid } from '@mantine/core';
 import { RichEditor } from '../components/RichEditor';
 import { useState } from 'react';
-import { showErrorNotification, showSuccessNotification } from '../utils/Notification';
-import { useDisclosure } from '@mantine/hooks';
+import { showSuccessNotification } from '../utils/Notification';
 import { useKeywords } from '../utils/Storage';
 
 export default function HomePage() {
   const [btnSaveClickCount, setBtnSaveClickCount] = useState(0);
-  const [btnSearchClickCount, setBtnSearchClickCount] = useState(0);
-  const [btnResetClickCount, setBtnResetClickCount] = useState(0);
-  const [opened, { toggle }] = useDisclosure(false);
   const [keywords, setKeywords] = useKeywords();
 
   const handleSaveButtonClick = () => {
     setBtnSaveClickCount((c) => c + 1);
     showSuccessNotification('Đã lưu', 'Đã lưu lại nội dung vào bộ nhớ.');
-  };
-
-  const handleSearchButtonClick = () => {
-    setBtnSearchClickCount((c) => c + 1);
-    showErrorNotification('Chưa làm', 'Tính năng chưa được triển khai');
-  };
-
-  const handleResetButtonClick = () => {
-    setBtnResetClickCount((c) => c + 1);
-    showErrorNotification('Chưa làm', 'Tính năng chưa được triển khai');
   };
 
   const handleKeywordsChange = ({ target }) => {
@@ -39,12 +25,7 @@ export default function HomePage() {
     <>
       <Grid style={{ maxWidth: '100%' }}>
         <Grid.Col span="auto" mt="xl" ml="xl">
-          <RichEditor
-            btnSaveClickCount={btnSaveClickCount}
-            btnResetClickCount={btnResetClickCount}
-            btnSearchClickCount={btnSearchClickCount}
-            keywords={keywords}
-          ></RichEditor>
+          <RichEditor btnSaveClickCount={btnSaveClickCount} keywords={keywords}></RichEditor>
         </Grid.Col>
         <Grid.Col span="content" px="md">
           <Grid style={{ width: '100%' }}>
