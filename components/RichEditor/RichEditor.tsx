@@ -16,6 +16,7 @@ export interface RichEditorProps {
   btnSaveClickCount: number;
   keywords: string;
 }
+const pluginWithoutSegment = [DuplicatedWords, Punctuation];
 
 export function RichEditor(props: RichEditorProps) {
   const [content, setContent] = useEditorContent();
@@ -31,7 +32,7 @@ export function RichEditor(props: RichEditorProps) {
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Linter.configure({
-        plugins: [DuplicatedWords, Punctuation],
+        plugins: pluginWithoutSegment,
       }),
       searchExtension,
     ],
