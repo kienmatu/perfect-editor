@@ -1,18 +1,24 @@
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
-import { Text, Button, Group, Box, Textarea } from '@mantine/core';
+import { Text, Button, Group, Box, Textarea, LoadingOverlay } from '@mantine/core';
 import { Grid } from '@mantine/core';
 import { RichEditor } from '../components/RichEditor';
 import { useState } from 'react';
 import { showSuccessNotification } from '../utils/Notification';
 import { useKeywords } from '../utils/Storage';
+import { Status } from '../lib';
 
 export default function HomePage() {
   const [btnSaveClickCount, setBtnSaveClickCount] = useState(0);
+  const [analyzeStatus, setAnalyzeStatus] = useState(Status.IDLE);
   const [keywords, setKeywords] = useKeywords();
 
   const handleSaveButtonClick = () => {
     setBtnSaveClickCount((c) => c + 1);
     showSuccessNotification('Đã lưu', 'Đã lưu lại nội dung vào bộ nhớ.');
+  };
+
+  const handleAnalyzeButtonClick = () => {
+    setAnalyzeStatus((s) => Status.STARTED);
   };
   // @ts-ignore: Unreachable code error
   const handleKeywordsChange = ({ target }) => {
@@ -23,9 +29,15 @@ export default function HomePage() {
   };
   return (
     <>
+      <LoadingOverlay visible={analyzeStatus !== Status.IDLE} overlayBlur={2} />
       <Grid style={{ maxWidth: '100%' }}>
         <Grid.Col span="auto" mt="xl" ml="xl">
-          <RichEditor btnSaveClickCount={btnSaveClickCount} keywords={keywords}></RichEditor>
+          <RichEditor
+            setStatus={setAnalyzeStatus}
+            status={analyzeStatus}
+            btnSaveClickCount={btnSaveClickCount}
+            keywords={keywords}
+          ></RichEditor>
         </Grid.Col>
         <Grid.Col span="content" px="md">
           <Grid style={{ width: '100%' }}>
@@ -40,18 +52,18 @@ export default function HomePage() {
                 Check luôn lỗi dấu câu.
               </Text>
               <Text inherit variant="text" display="block" component="span">
+                Từ khóa tìm kiếm sẽ được{' '}
                 <span style={{ backgroundColor: '#fdd', borderBottom: '1px solid #f22' }}>
-                  Từ bị lặp sẽ được bôi đỏ.
+                  bôi đỏ.
                 </span>
               </Text>
               <Text inherit variant="text" display="block" component="span">
-                <span style={{ backgroundColor: 'rgba(255, 217, 0, 0.5)' }}>
-                  Từ khóa tìm kiếm sẽ được bôi vàng.
-                </span>
+                Từ bị lặp sẽ được{' '}
+                <span style={{ backgroundColor: 'rgba(255, 217, 0, 0.5)' }}>bôi vàng.</span>
               </Text>
               <Group mt="xl">
                 <Button onClick={handleSaveButtonClick}>Lưu nháp</Button>
-                {/* <Button onClick={handleSearchButtonClick}>Tìm từ khóa</Button> */}
+                <Button onClick={handleAnalyzeButtonClick}>Phân tích AI</Button>
                 {/* <Button variant="outline" color="orange" onClick={handleResetButtonClick}>
                   Reset
                 </Button> */}

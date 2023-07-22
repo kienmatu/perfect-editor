@@ -7,3 +7,9 @@ export interface Result {
   to: number;
   fix?: Function;
 }
+
+export enum Status {
+  IDLE = 'IDLE',
+  STARTED = 'STARTED',
+  RUNNING = 'RUNNING',
+}
