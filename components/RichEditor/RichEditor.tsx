@@ -12,7 +12,6 @@ import { useEditorContent } from '../../utils/Storage';
 import { DuplicatedWords, Punctuation } from '../../extensions/linter';
 import { SearchAndReplace } from '../../extensions/searchAndReplace';
 import { analyze } from '../../utils/Analyzer';
-import { Segmentation, Segmenter } from '../../extensions/segmentation';
 import { Status } from '../../lib';
 
 export interface RichEditorProps {
@@ -23,7 +22,6 @@ export interface RichEditorProps {
 }
 
 const linterPlugins = [DuplicatedWords, Punctuation];
-const segmentPlugins = [Segmentation];
 const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
