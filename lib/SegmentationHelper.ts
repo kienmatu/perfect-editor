@@ -1,4 +1,3 @@
-import { Node } from '@tiptap/pm/model';
 import axios from 'axios';
 
 import { RegexMatch, WordDictionary } from './Model';
@@ -30,24 +29,24 @@ async function findDuplicateOccurrencesWithAI(text: string): Promise<string[]> {
       method: 'WORD_TOKENIZER',
       text: text,
     });
-    const tokens: string[] = response.data.tokens;
+    const tokens: string[] = response?.data?.tokens;
     const lowerTokens = tokens.map((x) => x.toLocaleLowerCase());
+
     const wordCountMap: WordDictionary = {};
-    lowerTokens.forEach((token) => {
+    lowerTokens.forEach((token, index) => {
       if (ignoredCharacters.includes(token)) {
         return;
       }
-      const sanitizedWord = cleanWord(token);
-      if (wordCountMap[sanitizedWord]) {
-        wordCountMap[sanitizedWord]++;
+
+      const quoted = getQuotedText(lowerTokens, index);
+      if (wordCountMap[quoted]) {
+        wordCountMap[quoted]++;
       } else {
-        wordCountMap[sanitizedWord] = 1;
+        wordCountMap[quoted] = 1;
       }
     });
+
     const duplicatedWords = Object.keys(wordCountMap).filter((word) => wordCountMap[word] > 1);
-    console.log('tokens:', tokens);
-    console.log('MAP:', wordCountMap);
-    console.log('duplicatedWords:', duplicatedWords);
     return duplicatedWords;
   } catch (error) {
     console.error(error);
@@ -72,4 +71,19 @@ export function findAllMatchIndexesWithBuffer(
     }
   }
   return matches;
+}
+
+function getQuotedText(tokens: string[], index: number): string {
+  const startIndex = index - 1;
+  const endIndex = index + 1;
+  if (startIndex < 0 || endIndex >= tokens.length) {
+    return tokens[index];
+  }
+  const isInQuote =
+    (tokens[startIndex] == '"' || tokens[startIndex] == '“') &&
+    (tokens[endIndex] == '"' || tokens[endIndex] == '”');
+  if (isInQuote) {
+    return tokens[index - 1] + tokens[index] + tokens[index + 1];
+  }
+  return tokens[index];
 }
