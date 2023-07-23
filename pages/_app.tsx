@@ -21,6 +21,14 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
         <title>Perfector - Editor</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <link rel="shortcut icon" href="/favicon.svg" />
+        <meta
+          name="description"
+          content="Perfect editor, support checking duplication in text, kiểm tra trùng lặp trong đoạn văn bằng AI"
+        />
+        <meta
+          name="keywords"
+          content="perfect editor, duplication checking, kiểm tra trùng lặp trong văn bản"
+        />
       </Head>
 
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
