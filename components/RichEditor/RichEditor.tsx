@@ -1,21 +1,30 @@
 import { RichTextEditor, Link } from '@mantine/tiptap';
-import { useEditor } from '@tiptap/react';
+import { Editor, useEditor } from '@tiptap/react';
 import Highlight from '@tiptap/extension-highlight';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
-import { useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 
 import { useEditorContent } from '../../utils/Storage';
-import { DuplicatedWords, Linter, Punctuation } from '../../extensions/linter';
+import { DuplicatedWords, Punctuation } from '../../extensions/linter';
 import { SearchAndReplace } from '../../extensions/searchAndReplace';
+import { analyze } from '../../utils/Analyzer';
+import { Status } from '../../lib';
 
 export interface RichEditorProps {
   btnSaveClickCount: number;
+  status: Status;
+  setStatus: Dispatch<SetStateAction<Status>>;
   keywords: string;
 }
+
+const linterPlugins = [DuplicatedWords, Punctuation];
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 export function RichEditor(props: RichEditorProps) {
   const [content, setContent] = useEditorContent();
@@ -30,9 +39,14 @@ export function RichEditor(props: RichEditorProps) {
       SubScript,
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Linter.configure({
-        plugins: [DuplicatedWords, Punctuation],
-      }),
+      // Linter.configure({
+      //   plugins: linterPlugins,
+      // }),
+      // Segmenter.configure({
+      //   plugins: segmentPlugins,
+      //   status: props.status,
+      //   setStatus: props.setStatus,
+      // }),
       searchExtension,
     ],
     content: content,
@@ -46,6 +60,22 @@ export function RichEditor(props: RichEditorProps) {
       }
     }
   }, [props.btnSaveClickCount]);
+
+  useEffect(() => {
+    const fetcher = async (editor: Editor) => {
+      await analyze(editor);
+      // await sleep(200);
+    };
+    if (props.status === Status.STARTED && editor) {
+      props.setStatus(Status.RUNNING);
+      fetcher(editor)
+        .catch((err) => console.log)
+        .finally(() => {
+          console.log('ANALYZED');
+          props.setStatus(Status.IDLE);
+        });
+    }
+  }, [props.status]);
 
   useEffect(() => {
     if (props.keywords !== undefined && props.keywords !== null) {

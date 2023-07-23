@@ -16,7 +16,7 @@ export const findDuplicatedMatches = (node: Node): RegexMatch[] => {
   return matches;
 };
 
-function findAllMatchIndexes(regex: RegExp, text: string): RegexMatch[] {
+export function findAllMatchIndexes(regex: RegExp, text: string): RegexMatch[] {
   const matches: RegexMatch[] = [];
   let match;
   let loop = 0;
@@ -31,7 +31,7 @@ function findAllMatchIndexes(regex: RegExp, text: string): RegexMatch[] {
   return matches;
 }
 
-function buildDuplicateRegex(words: string[]): RegExp {
+export function buildDuplicateRegex(words: string[]): RegExp {
   const escapedWords = words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   const joinedWords = escapedWords.join('|');
 
@@ -42,6 +42,7 @@ function buildDuplicateRegex(words: string[]): RegExp {
   return new RegExp(regexPattern, 'igu');
 }
 
+// build a simple map with single words, then check duplications
 function findDuplicateOccurrences(text: string): string[] {
   const wordCountMap: WordDictionary = {};
   const words = text.split(' ');
@@ -62,7 +63,10 @@ function findDuplicateOccurrences(text: string): string[] {
   return duplicatedWords;
 }
 
-function cleanWord(input: string): string {
+/* Removes ignored character from start or end of words.
+ * eg: end!! => end, !abc.. => abc
+ */
+export function cleanWord(input: string): string {
   let startIndex = 0;
   let endIndex = input.length - 1;
 
