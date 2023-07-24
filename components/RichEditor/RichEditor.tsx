@@ -84,7 +84,7 @@ export function RichEditor(props: RichEditorProps) {
   }, [props.keywords]);
 
   return (
-    <RichTextEditor editor={editor} style={{ minHeight: '400px' }}>
+    <RichTextEditor id="mantine-perfector" editor={editor} style={{ minHeight: '400px' }}>
       <RichTextEditor.Toolbar stickyOffset={60}>
         <RichTextEditor.ControlsGroup>
           <RichTextEditor.Bold />

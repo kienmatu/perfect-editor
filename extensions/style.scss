@@ -1,0 +1,39 @@
+#mantine-perfector {
+  blockquote {
+    font-size: 1.02rem !important;
+    border-left: 4px solid rgba(#0d0d0d, 0.1);
+    padding-left: 1rem;
+    margin: 0.7rem 0;
+    padding: 0.5rem 1rem;
+  }
+  .lint-icon {
+    display: inline-block;
+    position: absolute;
+    right: 2px;
+    cursor: pointer;
+    border-radius: 100px;
+    background: #f22;
+    color: white;
+    font-family: times, georgia, serif;
+    font-size: 15px;
+    font-weight: bold;
+    width: 1.1em;
+    height: 1.1em;
+    text-align: center;
+    padding-left: 0.5px;
+    padding-right: 0.5px;
+    line-height: 1.1em;
+  }
+
+  .lint-icon:before {
+    content: '!';
+  }
+  .problem {
+    background: #fdd;
+    border-bottom: 1px solid #f22;
+    margin-bottom: -1px;
+  }
+  .search-result {
+    background-color: #fdd; /* rgba(255, 217, 0, 0.5);*/
+  }
+}
