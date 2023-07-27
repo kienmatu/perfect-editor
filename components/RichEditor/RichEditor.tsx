@@ -1,5 +1,5 @@
 import { RichTextEditor, Link } from '@mantine/tiptap';
-import { Editor, useEditor } from '@tiptap/react';
+import { Editor, Extensions, useEditor } from '@tiptap/react';
 import Highlight from '@tiptap/extension-highlight';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -9,7 +9,7 @@ import SubScript from '@tiptap/extension-subscript';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 
 import { useEditorContent } from '../../utils/Storage';
-import { DuplicatedWords, Punctuation } from '../../extensions/linter';
+import { DuplicatedWords, Linter, Punctuation } from '../../extensions/linter';
 import { SearchAndReplace } from '../../extensions/searchAndReplace';
 import { analyze } from '../../utils/Analyzer';
 import { Status } from '../../lib';
@@ -19,6 +19,7 @@ export interface RichEditorProps {
   status: Status;
   setStatus: Dispatch<SetStateAction<Status>>;
   keywords: string;
+  enableLinter: boolean;
 }
 
 const linterPlugins = [DuplicatedWords, Punctuation];
@@ -30,25 +31,26 @@ export function RichEditor(props: RichEditorProps) {
   const [content, setContent] = useEditorContent();
   const searchExtension = SearchAndReplace.configure({ caseSensitive: false });
   searchExtension.storage.searchTerm = props.keywords;
+  const extensions: Extensions = [
+    StarterKit,
+    Underline,
+    Link,
+    Superscript,
+    SubScript,
+    Highlight,
+    TextAlign.configure({ types: ['heading', 'paragraph'] }),
+    searchExtension,
+  ];
+
+  if (props.enableLinter) {
+    extensions.push(
+      Linter.configure({
+        plugins: linterPlugins,
+      })
+    );
+  }
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      Link,
-      Superscript,
-      SubScript,
-      Highlight,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      // Linter.configure({
-      //   plugins: linterPlugins,
-      // }),
-      // Segmenter.configure({
-      //   plugins: segmentPlugins,
-      //   status: props.status,
-      //   setStatus: props.setStatus,
-      // }),
-      searchExtension,
-    ],
+    extensions: extensions,
     content: content,
   });
 

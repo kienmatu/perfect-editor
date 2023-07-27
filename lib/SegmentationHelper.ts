@@ -25,8 +25,8 @@ async function findDuplicateOccurrencesWithAI(text: string): Promise<string[]> {
     return [];
   }
   try {
-    const response = await axios.post('/api/nlp', {
-      method: 'WORD_TOKENIZER',
+    const response = await axios.post('/api/tok', {
+      // method: 'WORD_TOKENIZER',
       text: text,
     });
     const tokens: string[] = response?.data?.tokens;
