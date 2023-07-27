@@ -6,7 +6,7 @@
     "node": "^18.0.0"
   },
   "scripts": {
-    "fastapi-dev": "pip3 install -r requirements.txt && py -m uvicorn --port 3000 api.index:app --reload",
+    "fastapi-dev": "pip3 install -r requirements.txt && py -m uvicorn --port 3000 pages.api.index:app --reload",
     "next-dev": "next dev",
     "dev": "concurrently \"npm run next-dev\" \"npm run fastapi-dev\"",
     "build": "next build",
