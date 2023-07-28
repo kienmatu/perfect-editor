@@ -6,11 +6,8 @@
     "node": "^18.0.0"
   },
   "scripts": {
-    "fastapi-dev": "pip3 install -r requirements.txt && python3 -m uvicorn --port 5328 api.index:app",
-    "flask-dev": "pip3 install -r requirements.txt && python3 -m flask --app api/index run -p 5328",
-    "python-build": "pip3 install -r requirements.txt",
     "next-dev": "next dev",
-    "dev": "concurrently \"npm run next-dev\" \"npm run fastapi-dev\"",
+    "dev": "npm run next-dev",
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",
@@ -55,10 +52,10 @@
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "styled-components": "^6.0.4"
+    "styled-components": "^6.0.4",
+    "vntk": "^1.4.4"
   },
   "devDependencies": {
-    "vntk": "^1.4.4",
     "@babel/core": "^7.17.8",
     "@next/eslint-plugin-next": "^12.1.4",
     "@types/jest": "^27.4.1",
