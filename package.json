@@ -6,11 +6,11 @@
     "node": "^18.0.0"
   },
   "scripts": {
-    "fastapi-dev": "pip3 install -r requirements.txt && python3 -m uvicorn --port 5328 api.index:app --reload",
+    "fastapi-dev": "pip3 install -r requirements.txt && python3 -m uvicorn --port 5328 api.index:app",
     "flask-dev": "pip3 install -r requirements.txt && python3 -m flask --app api/index run -p 5328",
     "python-build": "pip3 install -r requirements.txt",
     "next-dev": "next dev",
-    "dev": "concurrently \"npm run next-dev\" \"npm run flask-dev\"",
+    "dev": "concurrently \"npm run next-dev\" \"npm run fastapi-dev\"",
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",
