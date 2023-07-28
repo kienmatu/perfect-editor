@@ -1,2 +1,3 @@
 fastapi==0.95.2
+underthesea==6.6.0
 uvicorn[standard]
