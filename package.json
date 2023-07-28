@@ -55,10 +55,10 @@
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "styled-components": "^6.0.4",
-    "vntk": "^1.4.4"
+    "styled-components": "^6.0.4"
   },
   "devDependencies": {
+    "vntk": "^1.4.4",
     "@babel/core": "^7.17.8",
     "@next/eslint-plugin-next": "^12.1.4",
     "@types/jest": "^27.4.1",
