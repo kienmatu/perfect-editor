@@ -11,10 +11,10 @@ type EditorState = JSONContent | string | null | undefined;
 const content = `<h2 style="text-align: center;">Welcome to Perfect editor, for the publisher - publisher</h2>
 <p>Hỗ trợ tìm kiếm các từ bị lặp trong 1 đoạn văn, ví dụ đoạn văn này.</p>`;
 
-export function useAI() {
+export function useAI(startValue: string) {
   const stored =
     typeof window !== 'undefined' ? localStorage.getItem(StorageKeys.AI_EDITION) : null;
-  const initialContent = stored ? JSON.parse(stored) : 'python';
+  const initialContent = stored ? JSON.parse(stored) : startValue;
   return useLocalStorage<string>(StorageKeys.AI_EDITION, initialContent);
 }
 

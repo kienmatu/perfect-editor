@@ -5,8 +5,6 @@ import { buildDuplicateRegex } from './FindDuplicatedWords';
 
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
-const pythonAPI = 'https://hyfbq7acyerjsgmqdbjjprzs5e0wkfrz.lambda-url.ap-southeast-1.on.aws/';
-
 export const findDuplicatedTokenMatches = async (
   text: string,
   pos: number,
@@ -36,9 +34,17 @@ async function findDuplicateOccurrencesWithAI(text: string, mode: string): Promi
       });
     }
     if (mode == 'python') {
-      response = await axios.post(pythonAPI, {
-        text: text,
-      });
+      response = await axios.post(
+        '/api/py_tok',
+        {
+          text: text,
+        },
+        {
+          headers: {
+            Origin: 'https://perfector.vercel.app',
+          },
+        }
+      );
     }
     const tokens: string[] = response?.data?.tokens;
     const lowerTokens = tokens.map((x) => x.toLocaleLowerCase());

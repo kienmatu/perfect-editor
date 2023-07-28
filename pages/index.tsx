@@ -14,7 +14,7 @@ export default function HomePage() {
   const [btnSaveClickCount, setBtnSaveClickCount] = useState(0);
   const [analyzeStatus, setAnalyzeStatus] = useState(Status.IDLE);
   const [keywords, setKeywords] = useKeywords();
-  const [AIedition, setAIedition] = useAI();
+  const [AIedition, setAIedition] = useAI('python');
 
   const handleSaveButtonClick = () => {
     setBtnSaveClickCount((c) => c + 1);
@@ -25,7 +25,6 @@ export default function HomePage() {
     setAnalyzeStatus((s) => Status.STARTED);
   };
   const handleChangeAI = (v: string) => {
-    console.log(v);
     setAIedition((s) => v);
   };
   // @ts-ignore: Unreachable code error
@@ -94,8 +93,8 @@ export default function HomePage() {
                 onChange={handleChangeAI}
               >
                 <Group mt="xs">
-                  <Radio value="node" checked={AIedition == 'node'} label="AI 1" />
-                  <Radio value="python" checked={AIedition == 'python'} label="AI 2" />
+                  <Radio value="node" checked={AIedition === 'node'} label="AI 1" />
+                  <Radio value="python" checked={AIedition === 'python'} label="AI 2" />
                 </Group>
               </Radio.Group>
               <Group mt="xl">
