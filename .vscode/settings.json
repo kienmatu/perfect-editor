@@ -1,3 +1,17 @@
 {
-  "cSpell.words": ["mantine", "Perfector", "prosemirror", "Textblock", "tiptap", "vntk"]
+  "cSpell.words": [
+    "fastapi",
+    "mantine",
+    "Perfector",
+    "prosemirror",
+    "Textblock",
+    "tiptap",
+    "underthesea",
+    "uvicorn",
+    "vntk"
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8"
+  },
+  "python.formatting.provider": "none"
 }

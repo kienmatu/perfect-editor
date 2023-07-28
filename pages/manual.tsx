@@ -8,7 +8,7 @@ import { useKeywords } from '../utils/Storage';
 import { Status } from '../lib';
 import Link from 'next/link';
 
-export default function HomePage() {
+export default function ManualPage() {
   const [btnSaveClickCount, setBtnSaveClickCount] = useState(0);
   const [analyzeStatus, setAnalyzeStatus] = useState(Status.IDLE);
   const [keywords, setKeywords] = useKeywords();
@@ -18,9 +18,6 @@ export default function HomePage() {
     showSuccessNotification('Đã lưu', 'Đã lưu lại nội dung vào bộ nhớ.');
   };
 
-  const handleAnalyzeButtonClick = () => {
-    setAnalyzeStatus((s) => Status.STARTED);
-  };
   // @ts-ignore: Unreachable code error
   const handleKeywordsChange = ({ target }) => {
     const text = target?.value;
@@ -34,7 +31,7 @@ export default function HomePage() {
       <Grid style={{ maxWidth: '100%' }}>
         <Grid.Col span="auto" mt="xl" ml="xl">
           <RichEditor
-            enableLinter={false}
+            enableLinter={true}
             setStatus={setAnalyzeStatus}
             status={analyzeStatus}
             btnSaveClickCount={btnSaveClickCount}
@@ -46,7 +43,7 @@ export default function HomePage() {
             <Grid.Col span="auto">
               <ColorSchemeToggle />
               <Text inherit variant="gradient" display="block" align="center" component="span">
-                Perfect Editor A.I
+                Perfect Editor linter
               </Text>
               <Text inherit variant="text" display="block" component="span">
                 Kiểm tra trong 1 đoạn văn có chứa từ trùng lặp hay không.
@@ -65,10 +62,13 @@ export default function HomePage() {
               </Text>
               <Group mt="xl">
                 <Button onClick={handleSaveButtonClick}>Lưu nháp</Button>
-                <Button onClick={handleAnalyzeButtonClick}>Phân tích AI</Button>
-                <Link href="/manual">
-                  <Text color="blue">Check tay</Text>
+                <Link href="/">
+                  <Text color="blue">Trang chủ (AI)</Text>
                 </Link>
+                {/* <Button onClick={handleAnalyzeButtonClick}>Phân tích AI</Button> */}
+                {/* <Button variant="outline" color="orange" onClick={handleResetButtonClick}>
+                  Reset
+                </Button> */}
               </Group>
               <Group mt="xl">
                 <Box maw={700}>
