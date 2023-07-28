@@ -4,11 +4,19 @@ import { useEffect, useState } from 'react';
 export const StorageKeys = Object.freeze({
   EDITOR_CONTENT: 'EDITOR_CONTENT',
   KEYWORD_LIST: 'KEYWORD_LIST',
+  AI_EDITION: 'AI',
 });
 type EditorState = JSONContent | string | null | undefined;
 
 const content = `<h2 style="text-align: center;">Welcome to Perfect editor, for the publisher - publisher</h2>
 <p>Hỗ trợ tìm kiếm các từ bị lặp trong 1 đoạn văn, ví dụ đoạn văn này.</p>`;
+
+export function useAI() {
+  const stored =
+    typeof window !== 'undefined' ? localStorage.getItem(StorageKeys.AI_EDITION) : null;
+  const initialContent = stored ? JSON.parse(stored) : 'python';
+  return useLocalStorage<string>(StorageKeys.AI_EDITION, initialContent);
+}
 
 export function useEditorContent() {
   const stored =

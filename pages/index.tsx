@@ -1,17 +1,20 @@
-import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
-import { Text, Button, Group, Box, Textarea, LoadingOverlay } from '@mantine/core';
+import { Text, Button, Group, Box, Textarea, LoadingOverlay, Radio, Divider } from '@mantine/core';
 import { Grid } from '@mantine/core';
-import { RichEditor } from '../components/RichEditor';
 import { useState } from 'react';
 import { showSuccessNotification } from '../utils/Notification';
-import { useKeywords } from '../utils/Storage';
-import { Status } from '../lib';
+import { useKeywords, useAI } from '../utils/Storage';
+import { IconTool } from '@tabler/icons-react';
 import Link from 'next/link';
+
+import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
+import { Status } from '../lib';
+import { RichEditor } from '../components/RichEditor';
 
 export default function HomePage() {
   const [btnSaveClickCount, setBtnSaveClickCount] = useState(0);
   const [analyzeStatus, setAnalyzeStatus] = useState(Status.IDLE);
   const [keywords, setKeywords] = useKeywords();
+  const [AIedition, setAIedition] = useAI();
 
   const handleSaveButtonClick = () => {
     setBtnSaveClickCount((c) => c + 1);
@@ -20,6 +23,10 @@ export default function HomePage() {
 
   const handleAnalyzeButtonClick = () => {
     setAnalyzeStatus((s) => Status.STARTED);
+  };
+  const handleChangeAI = (v: string) => {
+    console.log(v);
+    setAIedition((s) => v);
   };
   // @ts-ignore: Unreachable code error
   const handleKeywordsChange = ({ target }) => {
@@ -39,6 +46,7 @@ export default function HomePage() {
             status={analyzeStatus}
             btnSaveClickCount={btnSaveClickCount}
             keywords={keywords}
+            AI={AIedition}
           ></RichEditor>
         </Grid.Col>
         <Grid.Col span="content" px="md">
@@ -63,12 +71,38 @@ export default function HomePage() {
                 Từ bị lặp sẽ được{' '}
                 <span style={{ backgroundColor: 'rgba(255, 217, 0, 0.5)' }}>bôi vàng.</span>
               </Text>
+              <Divider my="md" variant="dotted" />
+              <Link href="/manual">
+                <Text color="blue">Check tay</Text>
+              </Link>
+              <Divider
+                my="md"
+                variant="dotted"
+                labelPosition="left"
+                label={
+                  <>
+                    <IconTool size={12} />
+                    <Box ml={5}>Tools</Box>
+                  </>
+                }
+              />
+              <Radio.Group
+                name="favoriteAI"
+                label="Phiên bản AI"
+                description="Bản AI 2 chậm hơn nhưng chính xác hơn."
+                withAsterisk
+                onChange={handleChangeAI}
+              >
+                <Group mt="xs">
+                  <Radio value="node" checked={AIedition == 'node'} label="AI 1" />
+                  <Radio value="python" checked={AIedition == 'python'} label="AI 2" />
+                </Group>
+              </Radio.Group>
               <Group mt="xl">
-                <Button onClick={handleSaveButtonClick}>Lưu nháp</Button>
-                <Button onClick={handleAnalyzeButtonClick}>Phân tích AI</Button>
-                <Link href="/manual">
-                  <Text color="blue">Check tay</Text>
-                </Link>
+                <Button onClick={handleAnalyzeButtonClick}>Chạy AI</Button>
+                <Button color="orange" onClick={handleSaveButtonClick}>
+                  Lưu nháp
+                </Button>
               </Group>
               <Group mt="xl">
                 <Box maw={700}>

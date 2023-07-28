@@ -20,9 +20,11 @@ export interface RichEditorProps {
   setStatus: Dispatch<SetStateAction<Status>>;
   keywords: string;
   enableLinter: boolean;
+  AI?: string;
 }
 
 const linterPlugins = [DuplicatedWords, Punctuation];
+
 const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
@@ -65,7 +67,7 @@ export function RichEditor(props: RichEditorProps) {
 
   useEffect(() => {
     const fetcher = async (editor: Editor) => {
-      await analyze(editor);
+      await analyze(editor, props.AI!);
       // await sleep(200);
     };
     if (props.status === Status.STARTED && editor) {
