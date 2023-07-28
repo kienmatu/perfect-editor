@@ -28,7 +28,7 @@ class Payload(BaseModel):
     text: str
 
 
-@app.post("/tok")
+@app.post("/api/tok")
 def tokenize(req: Payload):
     tokens = word_tokenize(req.text)
     return {"tokens": tokens}
