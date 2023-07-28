@@ -1,15 +1,18 @@
 import axios from 'axios';
 
 import { RegexMatch, WordDictionary } from './Model';
-import { buildDuplicateRegex, cleanWord } from './FindDuplicatedWords';
+import { buildDuplicateRegex } from './FindDuplicatedWords';
 
 const ignoredCharacters: string[] = ['', ',', '!', '.', ':', '?', '"'];
 
+const pythonAPI = 'https://hyfbq7acyerjsgmqdbjjprzs5e0wkfrz.lambda-url.ap-southeast-1.on.aws/';
+
 export const findDuplicatedTokenMatches = async (
   text: string,
-  pos: number
+  pos: number,
+  mode: string
 ): Promise<RegexMatch[]> => {
-  const duplicates = await findDuplicateOccurrencesWithAI(text);
+  const duplicates = await findDuplicateOccurrencesWithAI(text, mode);
   if (duplicates.length < 1) {
     return [];
   }
@@ -20,15 +23,23 @@ export const findDuplicatedTokenMatches = async (
   return matches;
 };
 
-async function findDuplicateOccurrencesWithAI(text: string): Promise<string[]> {
+async function findDuplicateOccurrencesWithAI(text: string, mode: string): Promise<string[]> {
   if (text.trim().length == 0) {
     return [];
   }
   try {
-    const response = await axios.post('/api/nlp', {
-      method: 'WORD_TOKENIZER',
-      text: text,
-    });
+    let response;
+    if (mode == 'node') {
+      response = await axios.post('/api/nlp', {
+        method: 'WORD_TOKENIZER',
+        text: text,
+      });
+    }
+    if (mode == 'python') {
+      response = await axios.post(pythonAPI, {
+        text: text,
+      });
+    }
     const tokens: string[] = response?.data?.tokens;
     const lowerTokens = tokens.map((x) => x.toLocaleLowerCase());
 

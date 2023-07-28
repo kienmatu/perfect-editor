@@ -1,5 +1,5 @@
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
-import { Text, Button, Group, Box, Textarea, LoadingOverlay } from '@mantine/core';
+import { Text, Button, Group, Box, Textarea, LoadingOverlay, Divider } from '@mantine/core';
 import { Grid } from '@mantine/core';
 import { RichEditor } from '../components/RichEditor';
 import { useState } from 'react';
@@ -60,11 +60,13 @@ export default function ManualPage() {
                 Từ bị lặp sẽ được{' '}
                 <span style={{ backgroundColor: 'rgba(255, 217, 0, 0.5)' }}>bôi vàng.</span>
               </Text>
+              <Divider my="md" variant="dotted" />
+              <Link href="/">
+                <Text color="blue">Trang chủ (AI)</Text>
+              </Link>
               <Group mt="xl">
                 <Button onClick={handleSaveButtonClick}>Lưu nháp</Button>
-                <Link href="/">
-                  <Text color="blue">Trang chủ (AI)</Text>
-                </Link>
+
                 {/* <Button onClick={handleAnalyzeButtonClick}>Phân tích AI</Button> */}
                 {/* <Button variant="outline" color="orange" onClick={handleResetButtonClick}>
                   Reset
