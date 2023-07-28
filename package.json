@@ -6,10 +6,9 @@
     "node": "^18.0.0"
   },
   "scripts": {
-    "fastapi-dev": "pip3 install -r requirements.txt && python3 -m uvicorn --port 3001 pages.api.index:app --reload",
-    "flask-dev": "pip3 install -r requirements.txt && python3 -m flask --app pages.api.index run --port 5328",
+    "fastapi-dev": "pip3 install -r requirements.txt && python3 -m uvicorn --port 5328 api.index:app --reload",
+    "flask-dev": "pip3 install -r requirements.txt && python3 -m flask --app api/index run -p 5328",
     "python-build": "pip3 install -r requirements.txt",
-    "python-start": "python3 -m uvicorn --port 3001 pages.api.index:app",
     "next-dev": "next dev",
     "dev": "concurrently \"npm run next-dev\" \"npm run flask-dev\"",
     "build": "next build",
