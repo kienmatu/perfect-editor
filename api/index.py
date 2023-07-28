@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
 from underthesea import word_tokenize
 
 app = FastAPI()
