@@ -4,6 +4,8 @@ from underthesea import word_tokenize
 from flask import Flask, request
 
 app = Flask(__name__)
+# just init, avoid NonType
+word_tokenize("Kiên rất đẹp trai")
 
 @app.route('/api/tok', methods=['POST'])
 def tokenize():
