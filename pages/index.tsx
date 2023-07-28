@@ -90,11 +90,12 @@ export default function HomePage() {
                 label="Phiên bản AI"
                 description="Bản AI 2 chậm hơn nhưng chính xác hơn."
                 withAsterisk
+                value={AIedition}
                 onChange={handleChangeAI}
               >
                 <Group mt="xs">
-                  <Radio value="node" checked={AIedition === 'node'} label="AI 1" />
-                  <Radio value="python" checked={AIedition === 'python'} label="AI 2" />
+                  <Radio value="node" label="AI 1" />
+                  <Radio value="python" label="AI 2" />
                 </Group>
               </Radio.Group>
               <Group mt="xl">
