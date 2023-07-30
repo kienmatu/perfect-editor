@@ -34,17 +34,9 @@ async function findDuplicateOccurrencesWithAI(text: string, mode: string): Promi
       });
     }
     if (mode == 'python') {
-      response = await axios.post(
-        '/api/py_tok',
-        {
-          text: text,
-        },
-        {
-          headers: {
-            Origin: 'https://perfector.vercel.app',
-          },
-        }
-      );
+      response = await axios.post('/api/py_tok', {
+        text: text,
+      });
     }
     const tokens: string[] = response?.data?.tokens;
     const lowerTokens = tokens.map((x) => x.toLocaleLowerCase());
